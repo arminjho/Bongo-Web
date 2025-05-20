@@ -141,7 +141,8 @@ namespace Bongo.Core
         {
             _availableStudyRoom.Clear();
             var result = _bookingService.BookStudyRoom(_request);
-            _studyRoomBookingRepoMock.Verify(x => x.Book(It.IsAny<StudyRoomBooking>()), Times.Never);
+            _studyRoomBookingRepoMock.Verify(x => 
+            x.Book(It.IsAny<StudyRoomBooking>()), Times.Never);
 
         }
     }

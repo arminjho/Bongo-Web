@@ -19,6 +19,7 @@ namespace Bongo.DataAccess
         private StudyRoomBooking studyRoomBooking_One;
         private StudyRoomBooking studyRoomBooking_Two;
         private DbContextOptions<ApplicationDbContext> options;
+        private ApplicationDbContext context;   
 
 
         public StudyRoomBookingRepositoryTests()
@@ -49,6 +50,7 @@ namespace Bongo.DataAccess
         public void SetUp() {
             options = new DbContextOptionsBuilder<ApplicationDbContext>()
                     .UseInMemoryDatabase(databaseName: "temp_Bongo").Options;
+            context = new ApplicationDbContext(options);
         }
 
        
@@ -58,17 +60,19 @@ namespace Bongo.DataAccess
         public void SaveBooking_Booking_One_CheckTheValuesFromDatabase()
         {
             //arrange
-            
+
 
             //act
-            using (var context = new ApplicationDbContext(options))
+            using (context)
+
             {
                 var repository = new StudyRoomBookingRepository(context);
                 repository.Book(studyRoomBooking_One);
             }
 
             //assert
-            using (var context = new ApplicationDbContext(options))
+            using (context=new ApplicationDbContext(options))
+
             {
                 var bookingFromDb = context.StudyRoomBookings.FirstOrDefault(u => u.BookingId == 11);
                 ClassicAssert.AreEqual(studyRoomBooking_One.BookingId, bookingFromDb.BookingId);
@@ -89,7 +93,7 @@ namespace Bongo.DataAccess
            
 
 
-            using (var context = new ApplicationDbContext(options))
+            using (context)
             {
                 context.Database.EnsureDeleted();
                 var repository = new StudyRoomBookingRepository(context);

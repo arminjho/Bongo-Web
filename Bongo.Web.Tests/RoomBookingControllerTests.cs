@@ -39,7 +39,9 @@ namespace Bongo.Web
         {
             _bookingController.ModelState.AddModelError("test", "test");
 
-            var result = _bookingController.Book(new StudyRoomBooking());
+            var studyRoom = new StudyRoomBooking();
+
+            var result = _bookingController.Book(studyRoom);
 
             ViewResult viewResult = result as ViewResult;
             ClassicAssert.AreEqual("Book", viewResult.ViewName);
@@ -48,13 +50,19 @@ namespace Bongo.Web
         [Test]
         public void BookRoomCheck_NotSuccessful_NoRoomCode()
         {
-            _studyRoomBookingService.Setup(x => x.BookStudyRoom(It.IsAny<StudyRoomBooking>()))
-                .Returns(new StudyRoomBookingResult()
-                {
-                    Code = StudyRoomBookingCode.NoRoomAvailable
-                });
+            var studyRoomBookingResult = new StudyRoomBookingResult()
+            {
+                Code = StudyRoomBookingCode.NoRoomAvailable
+            };
 
-            var result = _bookingController.Book(new StudyRoomBooking());
+            var studyRoom = new StudyRoomBooking();
+
+
+            _studyRoomBookingService.Setup(x =>
+            x.BookStudyRoom(It.IsAny<StudyRoomBooking>()))
+                .Returns(studyRoomBookingResult);
+
+            var result = _bookingController.Book(studyRoom);
             ClassicAssert.IsInstanceOf<ViewResult>(result);
             ViewResult viewResult = result as ViewResult;
             ClassicAssert.AreEqual("No Study Room available for selected date"
